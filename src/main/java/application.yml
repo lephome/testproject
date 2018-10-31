@@ -1,0 +1,6 @@
+mybatis:
+  mapperlocations: classpath:mapper/*.xml
+
+spring:
+  profiles: 
+    active: dev

@@ -1,0 +1,32 @@
+server:
+  port: 8123
+  context-path: /device  
+spring:
+  redis:
+    database: 0
+    host: 192.200.125.151
+    password:
+    port: 6379
+    timeout: 3000
+    pool: 
+      max-active: 8
+      max-wait: -1
+      max-idle: 8
+      min-idle: 0
+  datasource:
+    primary: 
+      driver-class-name: com.mysql.jdbc.Driver
+      jdbc-url: jdbc:mysql://112.81.63.62:3306/3gvideotest?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true
+      username: 3gtest
+      password: 3gtest_1234
+    emmp: 
+      driver-class-name: oracle.jdbc.driver.OracleDriver
+      jdbc-url: jdbc:oracle:thin:@192.200.125.151:1521:oracle
+      username: emmp_test
+      password: emmp_test
+#spring:
+#  datasource:
+#    driver-class-name: 
+#    url: 
+#    username: 
+#    password: 
