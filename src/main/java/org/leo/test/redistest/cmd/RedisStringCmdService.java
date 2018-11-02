@@ -1,16 +1,15 @@
 package org.leo.test.redistest.cmd;
 
 
-import java.util.Set;
+import java.util.List;
 
 import org.leo.test.redistest.cmd.itf.IRedisStringCmdSerive;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import redis.clients.jedis.BitOP;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.ScanParams;
-import redis.clients.jedis.ScanResult;
 
 @Service
 public class RedisStringCmdService implements IRedisStringCmdSerive {
@@ -34,160 +33,105 @@ public class RedisStringCmdService implements IRedisStringCmdSerive {
 	public String set(String key, String value) {
 		return jedis.set(key, value);
 	}
-	@Override
-	public Long del(String key) {
-		 return jedis.del(key);
-	}
-	@Override
-	public Boolean exists(String key) {
-		return jedis.exists(key);
-	}
-	public Set<String> keys(String pattern) {
-		return jedis.keys(pattern);
-	}
-	
-	public Long expire(String key, int seconds) {
-		return jedis.expire(key, seconds);
-	}
-	/**
-	 设置成功，返回 1
-	key 不存在或设置失败，返回 0
+	/*
+	 如果 key 已经存在并且是一个字符串， APPEND 命令将 value 追加到 key 原来的值的末尾
+	如果 key 不存在， APPEND 就简单地将给定 key 设为 value ，就像执行 SET key value 一样。
+	返回值:追加 value 之后， key 中字符串的长度。
 	 */
-	public Long pexpire(String key, long milliseconds) {
-		return jedis.pexpire(key, milliseconds);
+	public Long append(String key, String value) {
+		return jedis.append(key, value);
 	}
-	
-	public Long expireAt(String key, long unixTime) {
-		return jedis.expireAt(key, unixTime);
+	public Long bitcount(String key) {
+		return jedis.bitcount(key);
 	}
-	
-	public Long pexpireAt(String key, long millisecondsTimestamp) {
-		return jedis.pexpireAt(key, millisecondsTimestamp);
+	public boolean setbit(String key, long offset, boolean value) {
+		return jedis.setbit(key, offset, value);
 	}
-	
-	public Long ttl(String key) {
-		return jedis.ttl(key);
+	public boolean setbit(String key, long offset, String value) {
+		return jedis.setbit(key, offset, value);
 	}
-	/**
-	 毫秒为单位
-	 */
-	public Long pttl(String key) {
-		return jedis.pttl(key);
-	}
-	/**
-	 * 当生存时间移除成功时，返回 1 .
-	 如果 key 不存在或 key 没有设置生存时间，返回 0 .
-	 */
-	public Long persist(String key) {
-		return jedis.persist(key);
-	}
-	
-	/**
-	 从当前数据库返回一个随机的key
-	 */
-	public String randomKey() {
-		return jedis.randomKey();
-	}
-	
-	/**
-	 将key重命名为newkey，如果key与newkey相同，将返回一个错误。如果newkey已经存在，则值将被覆盖
-	 返回值：OK
-	 */
-	public String rename(String oldkey, String newkey) {
-		return jedis.rename(oldkey, newkey);
-	}
-	/**
-	 当且仅当 newkey 不存在时，将 key 改名为 newkey 。
-当 key 不存在时，返回一个错误。
-
-修改成功时，返回 1 。
-如果 newkey 已经存在，返回 0 。
-	 */
-	public Long renamenx(String oldkey, String newkey) {
-		return jedis.renamenx(oldkey, newkey);
-	}
-	
-	/**
-	 序列化
-	 如果 key 不存在，那么返回 nil。</br> 否则，返回序列化之后的值。
-	 */
-	public byte[] dump(String key) {
-		return jedis.dump(key);
-	}
-	/**
-	 反序列化给定的序列化值，并将它和给定的 key 关联。
-
-参数 ttl 以毫秒为单位为 key 设置生存时间；如果 ttl 为 0 ，那么不设置生存时间。
-
-RESTORE 在执行反序列化之前会先对序列化值的 RDB 版本和数据校验和进行检查，如果 RDB 版本不相同或者数据不完整的话，那么 RESTORE 会拒绝进行反序列化，并返回一个错误。
-
-如果键 key 已经存在， 并且给定了 REPLACE 选项， 那么使用反序列化得出的值来代替键 key 原有的值； 相反地， 如果键 key 已经存在， 但是没有给定 REPLACE 选项， 那么命令返回一个错误。
-	 */
-	public String restore(String key, int ttl, byte[] serializedValue) {
-		return jedis.restore(key, ttl, serializedValue);
-	}
-	@Override
-	public ScanResult<String> scan(String cursor) {
-//		byte[] keys = new byte[1];
-//		ScanResult r = jedis.scan(keys);
-//		r.getResult();
-////		jedis.scan(cursor, params)
-//		jedis.scan(cursor);
-//		ScanParams params = new ScanParams();
-//		params.count(100);
-//		String pattern = "";
-//		params.match(pattern);
-//		jedis.scan(cursor, params);
-//		jedis.scan
-		return jedis.scan(cursor);
-	}
-	@Override
-	public ScanResult<String> scanParams(String cursor,ScanParams params) {
-		return jedis.scan(cursor, params);
-	}
-	@Override
-	public String info() {
-		return jedis.info();
-	}
-	@Override
-	public String info(String section) {
-		return jedis.info(section);
+	public boolean getbit(String key, long offset) {
+		return jedis.getbit(key, offset);
 	}
 	/*
-	 none (key不存在)
-string (字符串)
-list (列表)
-set (集合)
-zset (有序集)
-hash (哈希表)
+	 public enum BitOP {
+  AND, OR, XOR, NOT;
+}
 	 */
-	public String type(String key) {
-		return jedis.type(key);
+	public Long bitop(BitOP op, String destKey, String... srcKeys) {
+		return jedis.bitop(op, destKey, srcKeys);
 	}
-	public String select(int index) {
-		return jedis.select(index);
+	public List<Long> bitfield(String key, String... arguments) {
+		return jedis.bitfield(key, arguments);
 	}
-	/*
-	 返回给定 key 引用所储存的值的次数。此命令主要用于除错
-	 */
-	public Long objectRefcount(String key) {
-		return jedis.objectRefcount(key);
-	}
-	/*
-	 返回给定 key 自储存以来的空闲时间(idle， 没有被读取也没有被写入)，以秒为单位。
-	 */
-	public Long objectIdletime(String key) {
-		return jedis.objectIdletime(key);
-	}
-	/*
-	 返回给定 key 锁储存的值所使用的内部表示(representation)。
-	 */
-	public String objectEncoding(String key) {
-		return jedis.objectEncoding(key);
-	}
-//	public String migrate(String key) {
-//		return jedis.migrate(host, port, key, destinationDb, timeout);
-//	}
 	
+	public Long incr(String key) {
+		return jedis.incr(key);
+	}
+	public Long incrBy(String key,long integer) {
+		return jedis.incrBy(key, integer);
+	}
+	public double incrByFloat(String key,double value) {
+		return jedis.incrByFloat(key, value);
+	}
 	
+	public Long decr(String key) {
+		return jedis.decr(key);
+	}
+	
+	public Long decrBy(String key,long integer) {
+		return jedis.decrBy(key, integer);
+	}
+	/*
+	 返回 key 中字符串值的子字符串，字符串的截取范围由 start 和 end 两个偏移量决定(包括 start 和 end 在内)。
+负数偏移量表示从字符串最后开始计数， -1 表示最后一个字符， -2 表示倒数第二个，以此类推。
+GETRANGE 通过保证子字符串的值域(range)不超过实际字符串的值域来处理超出范围的值域请求。
+在 <= 2.0 的版本里，GETRANGE 被叫作 SUBSTR。
+	 */
+	public String getrange(String key,long startOffset,long endOffset) {
+		return jedis.getrange(key, startOffset, endOffset);
+	}
+	/*
+	 将给定 key 的值设为 value ，并返回 key 的旧值(old value)。
+当 key 存在但不是字符串类型时，返回一个错误。
+	 */
+	public String getSet(String key,String value) {
+		return jedis.getSet(key, value);
+	}
+	/*
+	 返回所有(一个或多个)给定 key 的值。
+如果给定的 key 里面，有某个 key 不存在，那么这个 key 返回特殊值 nil 。因此，该命令永不失败。
+	 */
+	public List<String> mget(String... keys) {
+		return jedis.mget(keys);
+	}
+	public String mset(String... keysvalues) {
+		return jedis.mset(keysvalues);
+	}
+	public Long msetnx(String... keysvalues) {
+		return jedis.msetnx(keysvalues);
+	}
+	public String setex(String key, int seconds, String value) {
+		return jedis.setex(key, seconds, value);
+	}
+	/*
+	 将 key 的值设为 value ，当且仅当 key 不存在。
+若给定的 key 已经存在，则 SETNX 不做任何动作。
+SETNX 是『SET if Not eXists』(如果不存在，则 SET)的简写。
+	 */
+	public Long setnx(String key, String value) {
+		return jedis.setnx(key, value);
+	}
+	/*
+	 这个命令和 SETEX 命令相似，但它以毫秒为单位设置 key 的生存时间，而不是像 SETEX 命令那样，以秒为单位。
+	 */
+	public String psetex(String key, long milliseconds, String value) {
+		return jedis.psetex(key, milliseconds, value);
+	}
+	public Long setrange(String key, long offset, String value) {
+		return jedis.setrange(key, offset, value);
+	}
+	public Long strlen(String key) {
+		return jedis.strlen(key);
+	}
 }
